@@ -33,7 +33,7 @@ button {
 }
 
 .main {
-  height: 70.5%;
+  height: 100%;
 }
 
 /* Navbar */
@@ -88,7 +88,6 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
 }
 
 .main__board {
@@ -252,6 +251,24 @@ button {
 }
 
 /* Media queries */
+@media (max-height: 700px) {
+  .main__board__row__item {
+    width: 8vh;
+    height: 8vh;
+  }
+
+  .main__keyboard__row__item {
+    width: 8vw;
+    height: 8vh;
+  }
+}
+
+@media (max-height: 500px) {
+  .main__board__flex {
+    margin-top: -30px;
+  }
+}
+
 @media (max-width: 550px) {
   .main__keyboard__row__item {
     width: 8vw;
@@ -270,6 +287,6 @@ button {
   }
 
   .main__board {
-    width: 95%;
+    /* width: 95%; */
   }
 }
