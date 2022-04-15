@@ -5,19 +5,35 @@ const gameBoardItems = document.getElementsByClassName(
   "main__board__row__item"
 );
 
+const alertsContainer = document.querySelector(".alerts");
+
 let currentCharacterPosition = 0;
 let currentRowPosition = 0;
-
 const keyboard = document.querySelector(".main__keyboard");
 const keyboardItems = document.querySelectorAll(".main__keyboard__row__item");
 
+// Returns a Promise that resolves after "ms" Milliseconds
+const timer = (ms) => new Promise((res) => setTimeout(res, ms));
+
+// Alert div
+const showAlert = async (text) => {
+  const alert = document.createElement("div");
+  if (!alertsContainer.getElementsByTagName("div").length) {
+    alert.textContent = text;
+    alertsContainer.append(alert);
+    setTimeout(async () => {
+      alertsContainer.removeChild(alert);
+    }, 2000);
+  }
+};
+
 // returns random word from words_list.txt
-async function getRandomWord() {
+async function getRandomWordAndList() {
   return await fetch("words_list.txt")
     .then((response) => response.text())
-    .then((data) => {
-      data = data.split("\r\n").slice(0, -1);
-      return (data = data[Math.floor(Math.random() * data.length)]);
+    .then(async (data) => {
+      data = await getWordList();
+      return [data[Math.floor(Math.random() * data.length)], data];
     });
 }
 
@@ -30,11 +46,8 @@ async function getWordList() {
 
 // async function used to get random word from file async.
 (async () => {
-  // Reuse getwordlist in getrandomword
-  const randomWord = await getRandomWord();
-  const wordList = await getWordList();
+  const [randomWord, wordList] = await getRandomWordAndList();
   console.log(randomWord);
-  console.log(wordList);
 
   // check if key pressed is a letter, backspace or enter
   const checkPressedKey = (pressedKey) => {
@@ -47,15 +60,77 @@ async function getWordList() {
     );
   };
 
+  // check if there are enough letters and if the word
+  // is in the list
+  const checkWord = (totalLetters, currentRow) => {
+    if (totalLetters >= 5) {
+      let wordString = "";
+      for (let i = 0; i < 5; ++i) {
+        wordString +=
+          gameBoardItems[currentRow * 5 + i].dataset.key.toUpperCase();
+      }
+      if (wordList.includes(wordString)) {
+        return [1, wordString]; // word is in list
+      }
+      return [0, ""]; // word is not in list
+    }
+    return [-1, ""]; // not enough letters
+  };
+
+  // animate and check letters
+  const animateAndCheckLetters = (row, position, letter) => {
+    setTimeout(() => {
+      // todo get all index of items, not just one
+      gameBoardItems[row * 5 + position].style.border = "none";
+      const positionFound = randomWord.indexOf(letter);
+      if (positionFound !== -1 && positionFound !== position) {
+        gameBoardItems[row * 5 + position].style.backgroundColor =
+          document.getElementsByClassName(
+            `letter-${letter.toLowerCase()}`
+          )[0].style.backgroundColor = "var(--clr-yellow)";
+      } else if (positionFound === position) {
+        gameBoardItems[row * 5 + position].style.backgroundColor =
+          document.getElementsByClassName(
+            `letter-${letter.toLowerCase()}`
+          )[0].style.backgroundColor = "var(--clr-green)";
+      } else {
+        gameBoardItems[row * 5 + position].style.backgroundColor =
+          document.getElementsByClassName(
+            `letter-${letter.toLowerCase()}`
+          )[0].style.backgroundColor = "var(--clr-separator-dark)";
+      }
+    }, 250);
+    setTimeout((j) => {
+      gameBoardItems[row * 5 + position].classList.toggle(
+        "main__board__row__item--flip"
+      );
+      gameBoardItems[row * 5 + position].style.animation = "none";
+    }, 1000);
+  };
+
   // process game board based on key pressed
-  const processPressedKey = (pressedKey) => {
+  const processPressedKey = async (pressedKey) => {
     if (pressedKey === "enter") {
-      if (currentCharacterPosition >= 5) {
-        // TODO verify if word is in wordlist
+      const [verificationReturn, word] = checkWord(
+        currentCharacterPosition,
+        currentRowPosition
+      );
+      if (verificationReturn === 1) {
+        for (let i = 0; i < 5; ++i) {
+          gameBoardItems[currentRowPosition * 5 + i].classList.toggle(
+            "main__board__row__item--flip"
+          );
+          animateAndCheckLetters(currentRowPosition, i, word[i]);
+          await timer(300);
+        }
         currentCharacterPosition = 0;
         currentRowPosition++;
       } else {
-        console.log("Not enough letters.");
+        if (verificationReturn === 0) {
+          showAlert("Not in word list");
+        } else {
+          showAlert("Not enough letters");
+        }
         if (
           !gameBoardRows[currentRowPosition].classList.contains(
             "main__keyboard__row--shake"
@@ -77,7 +152,8 @@ async function getWordList() {
         const selectedItem =
           gameBoardItems[5 * currentRowPosition + currentCharacterPosition];
         selectedItem.textContent = "";
-        selectedItem.classList.toggle("main__board__row__item__filled");
+        selectedItem.classList.toggle("main__board__row__item--filled");
+        selectedItem.dataset.key = "";
       }
     } else {
       if (currentCharacterPosition < 5 && currentRowPosition < 6) {
@@ -85,7 +161,8 @@ async function getWordList() {
         const selectedItem =
           gameBoardItems[5 * currentRowPosition + currentCharacterPosition];
         selectedItem.textContent = pressedKey;
-        selectedItem.classList.toggle("main__board__row__item__filled");
+        selectedItem.classList.toggle("main__board__row__item--filled");
+        selectedItem.dataset.key = pressedKey;
         currentCharacterPosition++;
       }
     }
