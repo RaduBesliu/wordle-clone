@@ -21,6 +21,8 @@ button {
   --clr-separator-dark: rgb(58, 58, 60);
   --clr-accent-dark: rgb(255, 255, 255);
   --clr-input-letter-border-dark: rgb(86, 87, 88);
+  --clr-green: rgb(83, 141, 78);
+  --clr-yellow: rgb(181, 159, 59);
 }
 
 .body {
@@ -59,6 +61,26 @@ button {
   font-size: 37px;
   font-family: "Noto Serif", serif;
   color: var(--clr-accent-dark);
+}
+
+/* Alerts */
+.alerts {
+  width: 100%;
+  height: 30px;
+  position: relative;
+}
+
+.alerts > div {
+  background-color: var(--clr-accent-dark);
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 20px;
+  margin-inline: auto;
+  width: max-content;
+  padding: 10px 16px;
+  font-family: "Roboto", sans-serif;
+  font-weight: bold;
 }
 
 /* Board */
@@ -110,10 +132,33 @@ button {
   }
 }
 
-.main__board__row__item__filled {
+.main__board__row__item--filled {
   border: 2px solid var(--clr-input-letter-border-dark);
   animation: appear 100ms;
   animation-fill-mode: forwards;
+}
+
+@keyframes flip-in {
+  0% {
+    transform: rotateX(0);
+  }
+  100% {
+    transform: rotateX(90deg);
+  }
+}
+
+@keyframes flip-out {
+  0% {
+    transform: rotateX(90deg);
+  }
+
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+
+.main__board__row__item--flip {
+  animation: flip-in 250ms forwards, flip-out 250ms 300ms forwards;
 }
 
 /* Keyboard */
