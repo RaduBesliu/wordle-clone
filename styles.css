@@ -82,6 +82,7 @@ button {
   font-family: "Roboto", sans-serif;
   font-weight: bold;
   border-radius: 6px;
+  z-index: 2;
 }
 
 /* Board */
