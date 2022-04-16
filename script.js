@@ -12,6 +12,9 @@ let currentRowPosition = 0;
 const keyboard = document.querySelector(".main__keyboard");
 const keyboardItems = document.querySelectorAll(".main__keyboard__row__item");
 
+let randomWord = "";
+let wordList = [];
+
 // Returns a Promise that resolves after "ms" Milliseconds
 const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -46,7 +49,7 @@ async function getWordList() {
 
 // async function used to get random word from file async.
 (async () => {
-  const [randomWord, wordList] = await getRandomWordAndList();
+  [randomWord, wordList] = await getRandomWordAndList();
   // console.log(randomWord);
 
   // returns a list of all indexes of an item in an array
