@@ -39,7 +39,7 @@ async function getRandomWordAndList() {
 
 // returns all random words from words_list.txt
 async function getWordList() {
-  return await fetch("words_list.txt")
+  return await fetch("./words_list.txt")
     .then((response) => response.text())
     .then((data) => (data = data.split("\r\n").slice(0, -1)));
 }
@@ -153,7 +153,7 @@ async function getWordList() {
         currentRowPosition++;
         if (currentRowPosition >= 6) {
           await timer(500);
-          showAlert("Unlucky");
+          showAlert(`Unlucky. Word : ${randomWord}`);
         }
       } else {
         if (verificationReturn === 0) {
