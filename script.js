@@ -47,7 +47,15 @@ async function getWordList() {
 // async function used to get random word from file async.
 (async () => {
   const [randomWord, wordList] = await getRandomWordAndList();
-  console.log(randomWord);
+  // console.log(randomWord);
+
+  // returns a list of all indexes of an item in an array
+  const indexOfAll = (arr, item) => {
+    return arr.reduce(
+      (acc, val, index) => (item === val ? [...acc, index] : acc),
+      []
+    );
+  };
 
   // check if key pressed is a letter, backspace or enter
   const checkPressedKey = (pressedKey) => {
@@ -78,21 +86,30 @@ async function getWordList() {
   };
 
   // animate and check letters
-  const animateAndCheckLetters = (row, position, letter) => {
+  const animateAndCheckLetters = (row, position, letter, goodLetters) => {
     setTimeout(() => {
-      // todo get all index of items, not just one
       gameBoardItems[row * 5 + position].style.border = "none";
-      const positionFound = randomWord.indexOf(letter);
-      if (positionFound !== -1 && positionFound !== position) {
+      const positionFound = indexOfAll(Array.from(randomWord), letter);
+      // console.log(goodLetters);
+      // if the letter is already good somewhere else, dont make it yellow
+      if (
+        positionFound.length &&
+        !positionFound.includes(position) &&
+        !goodLetters.includes(letter)
+      ) {
         gameBoardItems[row * 5 + position].style.backgroundColor =
           document.getElementsByClassName(
             `letter-${letter.toLowerCase()}`
           )[0].style.backgroundColor = "var(--clr-yellow)";
-      } else if (positionFound === position) {
+      } else if (
+        positionFound.includes(position) ||
+        randomWord[position] === letter
+      ) {
         gameBoardItems[row * 5 + position].style.backgroundColor =
           document.getElementsByClassName(
             `letter-${letter.toLowerCase()}`
           )[0].style.backgroundColor = "var(--clr-green)";
+        if (!goodLetters.includes(letter)) goodLetters.push(letter);
       } else {
         gameBoardItems[row * 5 + position].style.backgroundColor =
           document.getElementsByClassName(
@@ -110,21 +127,34 @@ async function getWordList() {
 
   // process game board based on key pressed
   const processPressedKey = async (pressedKey) => {
+    if (currentRowPosition >= 6) return;
     if (pressedKey === "enter") {
       const [verificationReturn, word] = checkWord(
         currentCharacterPosition,
         currentRowPosition
       );
       if (verificationReturn === 1) {
+        let goodLetters = [];
         for (let i = 0; i < 5; ++i) {
           gameBoardItems[currentRowPosition * 5 + i].classList.toggle(
             "main__board__row__item--flip"
           );
-          animateAndCheckLetters(currentRowPosition, i, word[i]);
+          animateAndCheckLetters(currentRowPosition, i, word[i], goodLetters);
           await timer(300);
+        }
+        if (word === randomWord) {
+          await timer(500);
+          showAlert("Good job");
+          currentRowPosition = 6;
+          currentCharacterPosition = 0;
+          return;
         }
         currentCharacterPosition = 0;
         currentRowPosition++;
+        if (currentRowPosition >= 6) {
+          await timer(500);
+          showAlert("Unlucky");
+        }
       } else {
         if (verificationReturn === 0) {
           showAlert("Not in word list");
