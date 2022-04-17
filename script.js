@@ -42,7 +42,7 @@ async function getRandomWordAndList() {
 
 // returns all random words from words_list.txt
 async function getWordList() {
-  return await fetch("./words_list.txt")
+  return await fetch("./words-list.txt")
     .then((response) => response.text())
     .then((data) => (data = data.split("\r\n").slice(0, -1)));
 }
