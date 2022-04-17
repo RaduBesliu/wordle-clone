@@ -32,12 +32,8 @@ const showAlert = async (text) => {
 
 // returns random word from words_list.txt
 async function getRandomWordAndList() {
-  return await fetch("words_list.txt")
-    .then((response) => response.text())
-    .then(async (data) => {
-      data = await getWordList();
-      return [data[Math.floor(Math.random() * data.length)], data];
-    });
+  const data = await getWordList();
+  return [data[Math.floor(Math.random() * data.length)], data];
 }
 
 // returns all random words from words_list.txt
