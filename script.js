@@ -40,7 +40,11 @@ async function getRandomWordAndList() {
 async function getWordList() {
   return await fetch("./words-list.txt")
     .then((response) => response.text())
-    .then((data) => (data = data.split("\r\n").slice(0, -1)))
+    .then((data) => {
+      data = data.split("\n");
+      data = data.map((str) => str.trim());
+      return data;
+    })
     .catch((error) => {
       console.log(error);
     });
@@ -49,7 +53,7 @@ async function getWordList() {
 // async function used to get random word from file async.
 (async () => {
   [randomWord, wordList] = await getRandomWordAndList();
-  // console.log(randomWord);
+  // console.log(wordList);
 
   // returns a list of all indexes of an item in an array
   const indexOfAll = (arr, item) => {
