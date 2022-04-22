@@ -1,5 +1,7 @@
 # Wordle Clone
 
+### Hosted on: https://radubesliu.github.io/wordle-clone/
+
 ### A clone of the popular website Wordle made with:
 1. HTML
 2. CSS
