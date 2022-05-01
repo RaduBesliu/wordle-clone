@@ -10,4 +10,4 @@
 ### How to play?
 You have 6 tries to guess a random 5 letter word from the English language.
 If the letter appears in the word, but not on the correct position, it will be highlighted yellow.
-If it is on the correct position, it's color will be made green.
+If it is on the correct position, its color will be made green.
